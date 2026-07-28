@@ -39,8 +39,8 @@ done
 RECITE_GRADLE_USER_HOME="${GRADLE_USER_HOME:-/private/tmp/recite-gradle-home}"
 RECITE_ANDROID_USER_HOME="${ANDROID_USER_HOME:-/private/tmp/recite-android-home}"
 
-ACTUAL_VERSION="$(sed -n 's/.*versionName = "\\([^"]*\\)".*/\\1/p' app/build.gradle.kts | head -n 1)"
-ACTUAL_CODE="$(sed -n 's/.*versionCode = \\([0-9]*\\).*/\\1/p' app/build.gradle.kts | head -n 1)"
+ACTUAL_VERSION="$(sed -n 's/.*versionName = "\([^"]*\)".*/\1/p' app/build.gradle.kts | head -n 1)"
+ACTUAL_CODE="$(sed -n 's/.*versionCode = \([0-9]*\).*/\1/p' app/build.gradle.kts | head -n 1)"
 [[ "$VERSION" == "$ACTUAL_VERSION" && "$VERSION_CODE" == "$ACTUAL_CODE" ]] || {
   print -u2 "build.gradle.kts is version $ACTUAL_VERSION ($ACTUAL_CODE), not $VERSION ($VERSION_CODE)"
   exit 2

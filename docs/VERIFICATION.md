@@ -77,11 +77,14 @@ jq '{siteKey,itemCount,totalStages,manifestVersion,resourceKeyHash}' \
 - emulator-5554：1080×2400 compact 与 2560×1600 / 320 dpi expanded 布局已读取
 - 离线 `p1` 通读后 Room `stage=1, readPercent=100`
 - 未登录时 outbox 保留 1 条、未产生云端写入
+- Direct Release v0.1.0 / code 1 已用组织签名构建；APK v1/v2 签名有效
+- Release APK SHA-256 `cebee8e670f3575c1cd0dca1a2f1f081e2e2cf0b421877efbe22fc8d4c0d3b4f`
+- GitHub Release 与 R2 不可变 APK 已发布，公开回下载 SHA-256 与清单一致
+- 从公开 R2 下载的 release APK 在 API 35 模拟器安装、冷启动并离线列出 78 篇
 
 以下仍未通过，不得称为 production-ready：
 
 - 物理手机和真实平板
 - 真实 Seiue 登录与跨重启读回
-- release 签名升级
-- GitHub/R2 公共字节与 hash 读回
+- 同签名高版本覆盖安装并保留本机数据
 - Play Console 预发布报告

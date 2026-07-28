@@ -62,6 +62,8 @@ RECITE_ANDROID_KEY_PASSWORD
 
 直装版与 Play 版故意使用不同 package，避免 Google Play 签名与站外签名互相破坏升级连续性。
 
+当前公开版本：[`v0.1.0`](https://github.com/ieduer/recite-android/releases/tag/v0.1.0)。直装 APK 也可从 [第一方 R2 地址](https://img.bdfz.net/apps/recite-android/releases/v0.1.0/cebee8e670f3/langlang-0.1.0.apk) 获取；安装前可用 [`latest.json`](https://img.bdfz.net/apps/recite-android/latest.json) 核对版本与 SHA-256。
+
 ## 文档
 
 - [Cloudflare 后端分析](docs/CLOUDFLARE_ARCHITECTURE.md)

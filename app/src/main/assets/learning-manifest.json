@@ -1,0 +1,404 @@
+{
+  "schemaVersion": 1,
+  "siteKey": "recite",
+  "title": "琅琅 · 高考古诗文背诵",
+  "manifestVersion": "recite-962a658745787350",
+  "resourceKeyHash": "sha256:962a65874578735051e3b0a457deae6e1f188e72a431eb33ecd192cb80e108a0",
+  "itemCount": 78,
+  "completionKind": "five_stages_sealed",
+  "totalStages": 5,
+  "threshold": 0.8,
+  "thresholdCount": 63,
+  "items": [
+    {
+      "resourceKey": "p1",
+      "itemTitle": "《论语》十二章",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p2",
+      "itemTitle": "劝学",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p3",
+      "itemTitle": "屈原列传",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p4",
+      "itemTitle": "谏太宗十思疏",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p5",
+      "itemTitle": "师说",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p6",
+      "itemTitle": "阿房宫赋",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p7",
+      "itemTitle": "六国论",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p8",
+      "itemTitle": "答司马谏议书",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p9",
+      "itemTitle": "赤壁赋",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p10",
+      "itemTitle": "项脊轩志",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p11",
+      "itemTitle": "子路、曾晳、冉有、公西华侍坐",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p12",
+      "itemTitle": "报任安书",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p13",
+      "itemTitle": "过秦论(上)",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p14",
+      "itemTitle": "礼运",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p15",
+      "itemTitle": "陈情表",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p16",
+      "itemTitle": "归去来兮辞(并序)",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p17",
+      "itemTitle": "种树郭橐驼传",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p18",
+      "itemTitle": "五代史伶官传序",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p19",
+      "itemTitle": "石钟山记",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p20",
+      "itemTitle": "登泰山记",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p21",
+      "itemTitle": "《老子》八章",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p22",
+      "itemTitle": "季氏将伐颛臾",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p23",
+      "itemTitle": "大学",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p24",
+      "itemTitle": "中庸",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p25",
+      "itemTitle": "《孟子》一则",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p26",
+      "itemTitle": "逍遥游",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p27",
+      "itemTitle": "谏逐客书",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p28",
+      "itemTitle": "兰亭集序",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p29",
+      "itemTitle": "滕王阁序",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p30",
+      "itemTitle": "黄冈竹楼记",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p31",
+      "itemTitle": "上枢密韩太尉书",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p32",
+      "itemTitle": "毛诗序",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p33",
+      "itemTitle": "典论·论文",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p34",
+      "itemTitle": "诗品序",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p35",
+      "itemTitle": "与元九书",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p36",
+      "itemTitle": "题画",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p37",
+      "itemTitle": "人间词话",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p38",
+      "itemTitle": "静女",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p39",
+      "itemTitle": "无衣",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p40",
+      "itemTitle": "离骚",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p41",
+      "itemTitle": "涉江采芙蓉",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p42",
+      "itemTitle": "短歌行",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p43",
+      "itemTitle": "归园田居(其一)",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p44",
+      "itemTitle": "拟行路难(其四)",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p45",
+      "itemTitle": "春江花月夜",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p46",
+      "itemTitle": "山居秋暝",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p47",
+      "itemTitle": "蜀道难",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p48",
+      "itemTitle": "梦游天姥吟留别",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p49",
+      "itemTitle": "将进酒",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p50",
+      "itemTitle": "燕歌行",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p51",
+      "itemTitle": "蜀相",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p52",
+      "itemTitle": "客至",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p53",
+      "itemTitle": "登高",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p54",
+      "itemTitle": "登岳阳楼",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p55",
+      "itemTitle": "琵琶行(并序)",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p56",
+      "itemTitle": "李凭箜篌引",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p57",
+      "itemTitle": "菩萨蛮",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p58",
+      "itemTitle": "锦瑟",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p59",
+      "itemTitle": "虞美人",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p60",
+      "itemTitle": "望海潮(东南形胜)",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p61",
+      "itemTitle": "桂枝香·金陵怀古",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p62",
+      "itemTitle": "江城子·乙卯正月二十日夜记梦",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p63",
+      "itemTitle": "念奴娇·赤壁怀古",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p64",
+      "itemTitle": "登快阁",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p65",
+      "itemTitle": "鹊桥仙(纤云弄巧)",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p66",
+      "itemTitle": "苏幕遮(燎沉香)",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p67",
+      "itemTitle": "声声慢(寻寻觅觅)",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p68",
+      "itemTitle": "书愤(早岁那知世事艰)",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p69",
+      "itemTitle": "临安春雨初霁",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p70",
+      "itemTitle": "念奴娇·过洞庭",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p71",
+      "itemTitle": "永遇乐·京口北固亭怀古",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p72",
+      "itemTitle": "菩萨蛮·书江西造口壁",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p73",
+      "itemTitle": "青玉案·元夕",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p74",
+      "itemTitle": "贺新郎(国脉微如缕)",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p75",
+      "itemTitle": "扬州慢(淮左名都)",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p76",
+      "itemTitle": "长亭送别(【正宫】【端正好】)",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p77",
+      "itemTitle": "朝天子·咏喇叭",
+      "itemType": "recitation"
+    },
+    {
+      "resourceKey": "p78",
+      "itemTitle": "沁园春·长沙",
+      "itemType": "recitation"
+    }
+  ]
+}

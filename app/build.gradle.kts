@@ -5,9 +5,13 @@ plugins {
 }
 
 val releaseKeystorePath = providers.environmentVariable("RECITE_ANDROID_KEYSTORE_PATH")
+    .orElse(providers.environmentVariable("BDFZ_ANDROID_KEYSTORE_PATH"))
 val releaseStorePassword = providers.environmentVariable("RECITE_ANDROID_KEYSTORE_PASSWORD")
+    .orElse(providers.environmentVariable("BDFZ_ANDROID_KEYSTORE_PASSWORD"))
 val releaseKeyAlias = providers.environmentVariable("RECITE_ANDROID_KEY_ALIAS")
+    .orElse(providers.environmentVariable("BDFZ_ANDROID_KEY_ALIAS"))
 val releaseKeyPassword = providers.environmentVariable("RECITE_ANDROID_KEY_PASSWORD")
+    .orElse(providers.environmentVariable("BDFZ_ANDROID_KEY_PASSWORD"))
 val releaseSigningReady = listOf(
     releaseKeystorePath,
     releaseStorePassword,

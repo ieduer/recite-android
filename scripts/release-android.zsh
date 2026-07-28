@@ -23,12 +23,21 @@ cd "$ROOT"
   exit 2
 }
 
+: ${RECITE_ANDROID_KEYSTORE_PATH:=${BDFZ_ANDROID_KEYSTORE_PATH:-}}
+: ${RECITE_ANDROID_KEYSTORE_PASSWORD:=${BDFZ_ANDROID_KEYSTORE_PASSWORD:-}}
+: ${RECITE_ANDROID_KEY_ALIAS:=${BDFZ_ANDROID_KEY_ALIAS:-}}
+: ${RECITE_ANDROID_KEY_PASSWORD:=${BDFZ_ANDROID_KEY_PASSWORD:-}}
+export RECITE_ANDROID_KEYSTORE_PATH RECITE_ANDROID_KEYSTORE_PASSWORD RECITE_ANDROID_KEY_ALIAS RECITE_ANDROID_KEY_PASSWORD
+
 for name in RECITE_ANDROID_KEYSTORE_PATH RECITE_ANDROID_KEYSTORE_PASSWORD RECITE_ANDROID_KEY_ALIAS RECITE_ANDROID_KEY_PASSWORD; do
   [[ -n "${(P)name:-}" ]] || {
     print -u2 "Missing signing variable: $name"
     exit 2
   }
 done
+
+RECITE_GRADLE_USER_HOME="${GRADLE_USER_HOME:-/private/tmp/recite-gradle-home}"
+RECITE_ANDROID_USER_HOME="${ANDROID_USER_HOME:-/private/tmp/recite-android-home}"
 
 ACTUAL_VERSION="$(sed -n 's/.*versionName = "\\([^"]*\\)".*/\\1/p' app/build.gradle.kts | head -n 1)"
 ACTUAL_CODE="$(sed -n 's/.*versionCode = \\([0-9]*\\).*/\\1/p' app/build.gradle.kts | head -n 1)"
@@ -37,7 +46,10 @@ ACTUAL_CODE="$(sed -n 's/.*versionCode = \\([0-9]*\\).*/\\1/p' app/build.gradle.
   exit 2
 }
 
-./gradlew :app:lintDirectRelease :app:testDirectDebugUnitTest :app:assembleDirectRelease :app:bundlePlayRelease
+env \
+  GRADLE_USER_HOME="$RECITE_GRADLE_USER_HOME" \
+  ANDROID_USER_HOME="$RECITE_ANDROID_USER_HOME" \
+  ./gradlew :app:lintDirectRelease :app:testDirectDebugUnitTest :app:assembleDirectRelease :app:bundlePlayRelease
 
 APK="app/build/outputs/apk/direct/release/app-direct-release.apk"
 AAB="app/build/outputs/bundle/playRelease/app-play-release.aab"

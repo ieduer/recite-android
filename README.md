@@ -38,7 +38,7 @@ export GRADLE_USER_HOME=/private/tmp/recite-gradle-home
 app/build/outputs/apk/direct/debug/app-direct-debug.apk
 ```
 
-发布构建需要以下环境变量，值不得写入仓库：
+发布构建优先读取以下环境变量，值不得写入仓库：
 
 ```text
 RECITE_ANDROID_KEYSTORE_PATH
@@ -46,6 +46,8 @@ RECITE_ANDROID_KEYSTORE_PASSWORD
 RECITE_ANDROID_KEY_ALIAS
 RECITE_ANDROID_KEY_PASSWORD
 ```
+
+未配置专用变量时，构建会使用现有 `BDFZ_ANDROID_KEYSTORE_*` 组织签名变量。
 
 ```bash
 ./gradlew :app:assembleDirectRelease :app:bundlePlayRelease

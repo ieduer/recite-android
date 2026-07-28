@@ -8,7 +8,7 @@
 
 ## 签名
 
-发布变量只从批准的本地 secret 环境加载：
+发布变量只从批准的本地 secret 环境加载。优先使用：
 
 ```text
 RECITE_ANDROID_KEYSTORE_PATH
@@ -17,7 +17,7 @@ RECITE_ANDROID_KEY_ALIAS
 RECITE_ANDROID_KEY_PASSWORD
 ```
 
-签名文件和密码不得进入 Git、GitHub Actions 明文、报告或聊天。
+如果未配置专用变量，可使用现有 `BDFZ_ANDROID_KEYSTORE_*` 组织签名变量。签名文件和密码不得进入 Git、GitHub Actions 明文、报告或聊天。
 
 ## R2 对象
 

@@ -14,6 +14,12 @@
 - 手机底部导航；平板导航栏与篇目/练习双栏
 - R2 直装版内置受校验更新；Play 版不申请侧载权限
 
+## 界面
+
+| 手机目录 | 手机填空 | 平板双栏 |
+|---|---|---|
+| ![手机目录](docs/screenshots/phone-home.png) | ![手机填空](docs/screenshots/phone-cloze.png) | ![平板双栏](docs/screenshots/tablet-library.png) |
+
 ## 技术栈
 
 - Android Gradle Plugin 9.2.1

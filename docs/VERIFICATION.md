@@ -21,7 +21,7 @@ curl -sS https://recite.bdfz.net/api/rankings/health | jq .
 curl -sS 'https://recite.bdfz.net/api/rankings?limit=20' | jq .
 curl -sS https://img.bdfz.net/apps/recite-android/latest.json | jq .
 curl -sS https://pulse.bdfz.net/api/meta \
-  | jq '.registry[] | select(.host == "recite.bdfz.net")'
+  | jq '.registry[] | select(.host == "recite.bdfz.net" or .script == "recite-rankings")'
 curl -sS 'https://pulse.bdfz.net/api/range?from=<FROM>&to=<TO>' \
   | jq '[.sites[] | select(.host == "recite.bdfz.net" or .script == "recite-rankings")]'
 curl -sS https://pulse.bdfz.net/api/live | jq .
@@ -99,6 +99,8 @@ jq '{siteKey,itemCount,totalStages,manifestVersion,resourceKeyHash}' \
 - 实机原生交互验收通过：当前学习阶段、纵向五阶路径、已完成阶段回看、今日／总榜切换。
 - 同一实机临时使用 1600×2560 / 240 dpi 验证 expanded 布局：左侧导航、双栏学习和限宽排行榜均可操作；随后已恢复物理 1080×2376 / 450 dpi。
 - App 反馈的真实 canary 已由 User Center 保存并返回 Telegram `sent=true`；APK 不含 Bot 凭据。
+- User Center 聚合读回确认 `source=recite-android` 为 1 名用户、3 笔进度；Pulse 通过 `USER_CENTER` 服务绑定显示 `siteKey=recite` 共 7 名用户、26 笔聚合资料列。
+- Pulse version `54c55f7a-0e20-43fe-8a25-b9215cadc546` 已将 `recite-rankings` 作为独立 App 后端输出为 `worker_analytics / tracked_zero`；同期 `recite-gk` 为 122 次请求、0 错误，公开站点缺失数为 0。
 - GitHub Actions run `30425879074` 通过；GitHub Release [`v0.1.1`](https://github.com/ieduer/recite-android/releases/tag/v0.1.1) 与 R2 `latest.json` 已公开读回。
 - 当前公开 Direct APK 为 2,512,871 bytes，SHA-256 `54a893373cf1a22215832fe387133d057f1fcd9c281c05835e94b5f9812317b0`；v1/v2 签名有效，证书 SHA-256 `508429787cb0605f73c9fe423324fd14bc60873802f8d5e167d591bfc352fe0d`。
 

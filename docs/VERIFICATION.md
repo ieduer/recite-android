@@ -9,6 +9,7 @@
 - 云端进度：User Center `siteKey=recite`
 - 排行 API：`https://recite.bdfz.net/api/rankings`
 - 排行 Worker / D1：`recite-rankings`
+- 运行观测：Pulse `recite.bdfz.net` + script-only `recite-rankings`
 - 更新清单：`https://img.bdfz.net/apps/recite-android/latest.json`
 
 ## 2. Health probe
@@ -19,6 +20,11 @@ curl -sS https://recite.bdfz.net/api/learning/health | jq .
 curl -sS https://recite.bdfz.net/api/rankings/health | jq .
 curl -sS 'https://recite.bdfz.net/api/rankings?limit=20' | jq .
 curl -sS https://img.bdfz.net/apps/recite-android/latest.json | jq .
+curl -sS https://pulse.bdfz.net/api/meta \
+  | jq '.registry[] | select(.host == "recite.bdfz.net")'
+curl -sS 'https://pulse.bdfz.net/api/range?from=<FROM>&to=<TO>' \
+  | jq '[.sites[] | select(.host == "recite.bdfz.net" or .script == "recite-rankings")]'
+curl -sS https://pulse.bdfz.net/api/live | jq .
 ```
 
 App 启动后必须在飞行模式下列出 78 篇并打开原文。
@@ -62,6 +68,7 @@ jq '{siteKey,itemCount,totalStages,manifestVersion,resourceKeyHash}' \
 - 段位：315 为殿堂金框，375 为巅峰紫青框；边界单元测试必须通过
 - `recite.bdfz.net` 网页端进度仍正常
 - User Center Student Growth 的 recite 来源健康检查仍通过
+- Pulse 同时显示 `recite-gk` 的公开站点流量、`recite-rankings` 的基础设施流量和 `siteKey=recite` 的 User Center 聚合；不得把请求数当用户数
 
 ## 6. Backup and restore
 

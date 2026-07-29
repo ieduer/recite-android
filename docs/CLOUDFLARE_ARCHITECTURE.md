@@ -22,6 +22,10 @@ Android UI
           -> recite-rankings Worker
           -> USER_CENTER service binding verifies session and reads progress
           -> isolated recite-rankings D1 stores pseudonymous snapshots
+  -> pulse.bdfz.net
+      -> recite-gk Worker analytics for the public product runtime
+      -> recite-rankings script-only analytics for the app-owned API
+      -> USER_CENTER service binding supplies aggregate authenticated activity
 
 Release:
 GitHub source/tag/release
@@ -42,6 +46,7 @@ Google Play:
 | 语音/图片/AI | `recite-gk` Worker + `APIS` | 在线能力可满足；不声称离线 AI |
 | 段位与今日／总榜 | `recite-rankings` Worker + 独立 D1；从 User Center 已同步进度计算 | 可满足；App 不提交任意总分 |
 | App 反馈 | User Center `/api/feedback` + 服务端 Telegram 路由 | 可满足；Bot 凭据不进入 APK |
+| 运行观测 | Pulse：`recite.bdfz.net` / `recite-gk` + `recite-rankings`；User Center 仅经服务绑定输出聚合 | 可满足；请求量与用户数分开解释 |
 | APK 更新 | R2 内容寻址对象 + `latest.json` + SHA-256 | 可满足 |
 | 商店更新 | Google Play | Cloudflare 不能替代 |
 | 推送通知 | Worker 可做业务触发，设备投递仍需 FCM | 需 Google FCM |
@@ -93,6 +98,12 @@ Google Play:
 ## Cloudflare 边界
 
 Cloudflare 足以承载当前账号桥接、同步、反馈、榜单、AI 网关和 R2 更新，但不能替代 Google Play 的商店签名、Play Integrity、Billing、预发布报告、商店内更新和 FCM 设备投递。离线学习继续以 Room 为本机权威，不把 D1 变成实时多主数据库。
+
+Pulse 不直接绑定 User Center D1。`siteKey=recite` 的用户、进度、记录和
+反馈只通过版本化 `USER_CENTER` 服务绑定以站点级聚合进入 Pulse；
+`recite-gk` 与 `recite-rankings` 则分别提供公开产品和 App 专属榜单 API
+的 Worker 运行量与错误率。二者共同构成发布门槛，但不能把请求数当作
+独立用户数。
 
 ## 上架前未关闭的门槛
 

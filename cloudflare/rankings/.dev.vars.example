@@ -1,0 +1,2 @@
+# Generate a local-only random value. Production uses `wrangler secret put RANKING_PEPPER`.
+RANKING_PEPPER=<LOCAL_RANDOM_VALUE>

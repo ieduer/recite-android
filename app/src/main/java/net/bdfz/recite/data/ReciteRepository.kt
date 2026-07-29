@@ -94,6 +94,10 @@ class ReciteRepository(
         }
     }
 
+    fun requestSync() {
+        scheduleSync()
+    }
+
     private suspend fun mutate(
         piece: Piece,
         reason: String,

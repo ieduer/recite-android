@@ -1,0 +1,16 @@
+{
+  "name": "recite-rankings-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "tsc --noEmit && vitest run",
+    "types": "wrangler types",
+    "deploy:dry": "wrangler deploy --dry-run",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2",
+    "vitest": "4.1.10",
+    "wrangler": "4.115.0"
+  }
+}

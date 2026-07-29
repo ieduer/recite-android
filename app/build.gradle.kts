@@ -27,14 +27,13 @@ android {
         applicationId = "net.bdfz.recite"
         minSdk = 23
         targetSdk = 37
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
 
         buildConfigField("String", "USER_CENTER_URL", "\"https://my.bdfz.net\"")
-        buildConfigField("String", "STUBLOGS_URL", "\"https://app.bdfz.net\"")
         buildConfigField("String", "RECITE_API_URL", "\"https://recite.bdfz.net\"")
         buildConfigField("String", "UPDATE_MANIFEST_URL", "\"https://img.bdfz.net/apps/recite-android/latest.json\"")
     }
@@ -120,7 +119,7 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test:2.3.10")
-    testImplementation("org.json:json:20250517")
+    testImplementation("org.json:json:20260719")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")

@@ -85,7 +85,7 @@ jq -n \
     sha256: $sha256,
     downloadUrl: $downloadUrl,
     publishedAt: $publishedAt,
-    notes: ["首个原生 Android 预览版", "78 篇离线语料与五阶段练习", "手机和平板自适应布局"]
+    notes: ["原生五阶学习路径重新设计", "新增八段位、殿堂与巅峰头像框", "新增今日榜、总榜与 App 内反馈"]
   }' > "$RELEASE_DIR/latest.json"
 cp "$RELEASE_DIR/latest.json" "$RELEASE_DIR/release.json"
 

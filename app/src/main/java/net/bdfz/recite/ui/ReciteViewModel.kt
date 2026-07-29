@@ -13,6 +13,10 @@ import net.bdfz.recite.LangLangApplication
 import net.bdfz.recite.data.PieceProgressEntity
 import net.bdfz.recite.model.Piece
 import net.bdfz.recite.network.ApiException
+import net.bdfz.recite.ranking.LeaderboardScope
+import net.bdfz.recite.ranking.LeaderboardSnapshot
+import net.bdfz.recite.ranking.RankStatus
+import net.bdfz.recite.ranking.ReciteRanks
 import net.bdfz.recite.security.AppSession
 import net.bdfz.recite.update.AppUpdateManager
 import net.bdfz.recite.update.UpdateInfo
@@ -24,6 +28,7 @@ enum class AppScreen {
     LIBRARY,
     TODAY,
     PROGRESS,
+    LEADERBOARD,
     ACCOUNT,
 }
 
@@ -39,6 +44,13 @@ data class ReciteUiState(
     val session: AppSession? = null,
     val busy: Boolean = false,
     val notice: String = "",
+    val feedbackBusy: Boolean = false,
+    val feedbackNotice: String = "",
+    val feedbackReceiptId: String = "",
+    val leaderboard: LeaderboardSnapshot = LeaderboardSnapshot(),
+    val leaderboardScope: LeaderboardScope = LeaderboardScope.DAILY,
+    val leaderboardBusy: Boolean = false,
+    val leaderboardNotice: String = "",
     val updateState: UpdateState = UpdateState.Idle,
 ) {
     val completedCount: Int
@@ -51,6 +63,13 @@ data class ReciteUiState(
         get() = if (pieces.isEmpty()) 0 else {
             pieces.sumOf { progress[it.id]?.progressPercent ?: 0 } / pieces.size
         }
+
+    val rankPoints: Int
+        get() = pieces.sumOf { progress[it.id]?.stage?.coerceIn(0, 5) ?: 0 }
+            .coerceAtMost(ReciteRanks.MAX_POINTS)
+
+    val rankStatus: RankStatus
+        get() = ReciteRanks.status(rankPoints)
 }
 
 class ReciteViewModel(application: Application) : AndroidViewModel(application) {
@@ -82,6 +101,9 @@ class ReciteViewModel(application: Application) : AndroidViewModel(application) 
 
     fun navigate(screen: AppScreen) {
         _uiState.value = _uiState.value.copy(screen = screen, selectedPieceId = null, notice = "")
+        if (screen == AppScreen.LEADERBOARD) {
+            refreshLeaderboard(syncCurrentUser = _uiState.value.session != null)
+        }
     }
 
     fun selectPiece(pieceId: String?) {
@@ -150,40 +172,15 @@ class ReciteViewModel(application: Application) : AndroidViewModel(application) 
             val session = container.apiClient.login(username, password)
             container.sessionStore.write(session)
             val remote = container.apiClient.pullProgress(session)
-            withContext(Dispatchers.Main) {
-                repository.mergeRemote(remote)
-                _uiState.value = _uiState.value.copy(
-                    session = session,
-                    notice = "已登入並合併雲端進度。",
-                )
-            }
-        }
-    }
-
-    fun register(
-        username: String,
-        displayName: String,
-        password: String,
-        inviteCode: String,
-    ) {
-        if (!Regex("""(?=.{2,30}$)[a-z0-9]+(?:-[a-z0-9]+)*""").matches(username)) {
-            _uiState.value = _uiState.value.copy(notice = "用戶名需為 2–30 位小寫字母、數字或連字號。")
-            return
-        }
-        if (password.length < 8 || inviteCode.isBlank()) {
-            _uiState.value = _uiState.value.copy(notice = "密碼至少 8 位，並需填寫邀請碼。")
-            return
-        }
-        runAccountAction {
-            container.apiClient.registerUsername(username, displayName, password, inviteCode)
-            val session = container.apiClient.login(username, password)
-            container.sessionStore.write(session)
+            repository.mergeRemote(remote)
+            repository.requestSync()
             withContext(Dispatchers.Main) {
                 _uiState.value = _uiState.value.copy(
                     session = session,
-                    notice = "帳號已建立，離線進度會在有網路時同步。",
+                    notice = "登入成功。",
                 )
             }
+            refreshLeaderboard(syncCurrentUser = true)
         }
     }
 
@@ -194,8 +191,92 @@ class ReciteViewModel(application: Application) : AndroidViewModel(application) 
                 runCatching { container.apiClient.logout(session) }
                 container.sessionStore.clear()
             }
-            _uiState.value = _uiState.value.copy(session = null, notice = "已退出帳號；本機進度仍保留。")
+            _uiState.value = _uiState.value.copy(session = null, notice = "已退出帳號。")
+            if (_uiState.value.screen == AppScreen.LEADERBOARD) {
+                refreshLeaderboard(syncCurrentUser = false)
+            }
         }
+    }
+
+    fun setLeaderboardScope(scope: LeaderboardScope) {
+        _uiState.value = _uiState.value.copy(leaderboardScope = scope)
+    }
+
+    fun refreshLeaderboard(syncCurrentUser: Boolean = true) {
+        if (_uiState.value.leaderboardBusy) return
+        val session = _uiState.value.session
+        _uiState.value = _uiState.value.copy(
+            leaderboardBusy = true,
+            leaderboardNotice = "",
+        )
+        viewModelScope.launch {
+            try {
+                val snapshot = withContext(Dispatchers.IO) {
+                    container.apiClient.loadLeaderboard(
+                        session = session,
+                        syncCurrentUser = syncCurrentUser && session != null,
+                    )
+                }
+                _uiState.value = _uiState.value.copy(
+                    leaderboard = snapshot,
+                    leaderboardNotice = "",
+                )
+            } catch (_: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    leaderboardNotice = "榜單暫時不可用。",
+                )
+            } finally {
+                _uiState.value = _uiState.value.copy(leaderboardBusy = false)
+            }
+        }
+    }
+
+    fun submitFeedback(category: String, title: String, description: String) {
+        if (title.isBlank() || description.isBlank()) {
+            _uiState.value = _uiState.value.copy(feedbackNotice = "請填寫主題和反饋內容。")
+            return
+        }
+        if (_uiState.value.feedbackBusy) return
+        _uiState.value = _uiState.value.copy(
+            feedbackBusy = true,
+            feedbackNotice = "",
+            feedbackReceiptId = "",
+        )
+        viewModelScope.launch {
+            try {
+                val receipt = withContext(Dispatchers.IO) {
+                    container.apiClient.submitFeedback(
+                        session = _uiState.value.session,
+                        category = category,
+                        title = title,
+                        description = description,
+                    )
+                }
+                _uiState.value = _uiState.value.copy(
+                    feedbackNotice = if (receipt.notificationSent) {
+                        "反饋已送出，謝謝你。"
+                    } else {
+                        "反饋已保存，通知暫未送達。"
+                    },
+                    feedbackReceiptId = receipt.feedbackId,
+                )
+            } catch (error: ApiException) {
+                _uiState.value = _uiState.value.copy(feedbackNotice = error.message)
+            } catch (error: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    feedbackNotice = error.message ?: "反饋送出失敗。",
+                )
+            } finally {
+                _uiState.value = _uiState.value.copy(feedbackBusy = false)
+            }
+        }
+    }
+
+    fun clearFeedbackNotice() {
+        _uiState.value = _uiState.value.copy(
+            feedbackNotice = "",
+            feedbackReceiptId = "",
+        )
     }
 
     fun checkForUpdate(automatic: Boolean = false) {
@@ -222,6 +303,9 @@ class ReciteViewModel(application: Application) : AndroidViewModel(application) 
 
     fun onForeground() {
         checkForUpdate(automatic = true)
+        if (_uiState.value.screen == AppScreen.LEADERBOARD) {
+            refreshLeaderboard(syncCurrentUser = _uiState.value.session != null)
+        }
     }
 
     private fun refreshRemoteProgress(session: AppSession) {

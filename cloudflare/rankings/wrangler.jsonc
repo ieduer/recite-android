@@ -1,0 +1,37 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "recite-rankings",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-29",
+  "routes": [
+    {
+      "pattern": "recite.bdfz.net/api/rankings*",
+      "zone_name": "bdfz.net"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "recite-rankings",
+      "database_id": "8738e96e-9630-4cff-aaf4-128f007f6168",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "services": [
+    {
+      "binding": "USER_CENTER",
+      "service": "bdfz-user-center"
+    }
+  ],
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.05
+    }
+  }
+}

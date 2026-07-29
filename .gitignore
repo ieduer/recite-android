@@ -10,3 +10,5 @@ captures/
 keystore.properties
 release/
 .wrangler/
+node_modules/
+.dev.vars

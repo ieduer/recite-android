@@ -7,18 +7,29 @@
 - Kotlin + Jetpack Compose 原生界面
 - 78 篇高考古诗文随 APK 打包，断网可读
 - 通读、填空、理解、默写、测验五阶段离线学习
+- 当前阶段主卡 + 纵向五阶路径，完成、当前与锁定状态清晰分离
 - Room 本地进度库与幂等同步 outbox
 - WorkManager 在网络恢复后同步至 BDFZ User Center
-- Seiue 或既有 BDFZ 用户名登录
-- 邀请码保护的直接用户名注册
+- Seiue 或既有 BDFZ 用户名登录；首次 Seiue 登录自动建立 User Center 帐号
+- 原创八段位成长体系；升至殿堂、巅峰后自动切换金色与紫青头像框
+- 原生今日榜与总榜；服务端从已同步进度计算段位值，客户端不能自报分数
+- App 内原生反馈，服务端保存后通过既有 Telegram 路由通知维护者
 - 手机底部导航；平板导航栏与篇目/练习双栏
 - R2 直装版内置受校验更新；Play 版不申请侧载权限
 
 ## 界面
 
-| 手机目录 | 手机填空 | 平板双栏 |
-|---|---|---|
-| ![手机目录](docs/screenshots/phone-home.png) | ![手机填空](docs/screenshots/phone-cloze.png) | ![平板双栏](docs/screenshots/tablet-library.png) |
+| 手机目录 | 五阶核心 |
+|---|---|
+| ![手机目录](docs/screenshots/phone-home.png) | ![当前学习阶段](docs/screenshots/phone-learning-stage.png) |
+
+| 纵向五阶路径 | 原生排行榜 |
+|---|---|
+| ![纵向五阶路径](docs/screenshots/phone-stage-path.png) | ![原生排行榜](docs/screenshots/phone-leaderboard.png) |
+
+| 平板双栏 |
+|---|
+| ![平板双栏](docs/screenshots/tablet-library.png) |
 
 ## 技术栈
 
@@ -29,6 +40,7 @@
 - Jetpack Compose BOM 2026.06.00
 - compileSdk / targetSdk 37，minSdk 23
 - Room 2.8.4、WorkManager 2.11.2、OkHttp 5.4.0
+- 排行服务：Cloudflare Workers + D1，Wrangler 4.115.0、TypeScript 7.0.2
 
 ## 本地构建
 

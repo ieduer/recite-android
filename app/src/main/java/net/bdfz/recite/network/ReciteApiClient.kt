@@ -2,6 +2,9 @@ package net.bdfz.recite.network
 
 import net.bdfz.recite.BuildConfig
 import net.bdfz.recite.data.PieceProgressEntity
+import net.bdfz.recite.ranking.LeaderboardEntry
+import net.bdfz.recite.ranking.LeaderboardSnapshot
+import net.bdfz.recite.ranking.ReciteRanks
 import net.bdfz.recite.security.AppSession
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -13,7 +16,7 @@ import java.util.concurrent.TimeUnit
 
 class ReciteApiClient(
     private val userCenterUrl: String = BuildConfig.USER_CENTER_URL,
-    private val stublogsUrl: String = BuildConfig.STUBLOGS_URL,
+    private val reciteApiUrl: String = BuildConfig.RECITE_API_URL,
     private val client: OkHttpClient = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
@@ -43,26 +46,6 @@ class ReciteApiClient(
             slug = slug,
             displayName = user.optString("displayName", slug).ifBlank { slug },
             cookie = cookie,
-        )
-    }
-
-    fun registerUsername(
-        username: String,
-        displayName: String,
-        password: String,
-        inviteCode: String,
-    ) {
-        val body = JSONObject()
-            .put("slug", username.trim().lowercase())
-            .put("displayName", displayName.trim())
-            .put("description", "")
-            .put("adminPassword", password)
-            .put("inviteCode", inviteCode.trim())
-        executeJson(
-            Request.Builder()
-                .url("${stublogsUrl.trimEnd('/')}/api/register")
-                .post(body.toString().toRequestBody(JSON))
-                .build(),
         )
     }
 
@@ -135,6 +118,67 @@ class ReciteApiClient(
         )
     }
 
+    fun submitFeedback(
+        session: AppSession?,
+        category: String,
+        title: String,
+        description: String,
+    ): FeedbackReceipt {
+        val body = JSONObject()
+            .put("siteKey", "recite")
+            .put("siteTitle", "琅琅 Android")
+            .put("pageTitle", "Android App · 我的")
+            .put("category", category)
+            .put("severity", "normal")
+            .put("title", title.trim())
+            .put("description", description.trim())
+            .put(
+                "clientContext",
+                JSONObject()
+                    .put("platform", "android")
+                    .put("applicationId", BuildConfig.APPLICATION_ID)
+                    .put("versionName", BuildConfig.VERSION_NAME)
+                    .put("versionCode", BuildConfig.VERSION_CODE),
+            )
+        val request = Request.Builder()
+            .url("${userCenterUrl.trimEnd('/')}/api/feedback")
+            .post(body.toString().toRequestBody(JSON))
+            .apply {
+                if (session != null) header("Cookie", session.cookie)
+            }
+            .build()
+        val payload = executeJson(request).payload
+        return FeedbackReceipt(
+            feedbackId = payload.optString("feedbackId"),
+            notificationSent = payload.optJSONObject("notification")?.optBoolean("sent") == true,
+        )
+    }
+
+    fun loadLeaderboard(
+        session: AppSession?,
+        syncCurrentUser: Boolean,
+    ): LeaderboardSnapshot {
+        val request = Request.Builder()
+            .url("${reciteApiUrl.trimEnd('/')}/api/rankings?limit=20")
+            .apply {
+                if (session != null) header("Cookie", session.cookie)
+                if (syncCurrentUser && session != null) {
+                    post(ByteArray(0).toRequestBody(null))
+                } else {
+                    get()
+                }
+            }
+            .build()
+        val payload = executeJson(request).payload
+        return LeaderboardSnapshot(
+            daily = leaderboardEntries(payload, "daily"),
+            total = leaderboardEntries(payload, "total"),
+            meDaily = leaderboardEntry(payload.optJSONObject("meDaily")),
+            meTotal = leaderboardEntry(payload.optJSONObject("meTotal")),
+            generatedAt = payload.optString("generatedAt"),
+        )
+    }
+
     fun getJson(url: String): JSONObject {
         return executeJson(Request.Builder().url(url).get().build()).payload
     }
@@ -169,8 +213,33 @@ class ReciteApiClient(
         } catch (error: ApiException) {
             throw error
         } catch (error: IOException) {
-            throw ApiException("網路暫時不可用，離線內容仍可繼續使用。", cause = error)
+            throw ApiException("網路暫時不可用，請稍後再試。", cause = error)
         }
+    }
+
+    private fun leaderboardEntries(payload: JSONObject, key: String): List<LeaderboardEntry> {
+        val items = payload.optJSONArray(key) ?: return emptyList()
+        return buildList(items.length()) {
+            repeat(items.length()) { index ->
+                leaderboardEntry(items.optJSONObject(index))?.let(::add)
+            }
+        }
+    }
+
+    private fun leaderboardEntry(payload: JSONObject?): LeaderboardEntry? {
+        if (payload == null) return null
+        val totalPoints = payload.optInt("totalPoints").coerceIn(0, ReciteRanks.MAX_POINTS)
+        val position = payload.optInt("position")
+        val displayName = payload.optString("displayName").trim().take(32)
+        if (position <= 0 || displayName.isBlank()) return null
+        return LeaderboardEntry(
+            position = position,
+            displayName = displayName,
+            totalPoints = totalPoints,
+            todayPoints = payload.optInt("todayPoints").coerceIn(0, ReciteRanks.MAX_POINTS),
+            rank = ReciteRanks.fromName(payload.optString("rankName"), totalPoints),
+            isMe = payload.optBoolean("isMe"),
+        )
     }
 
     private data class JsonResponse(
@@ -182,6 +251,11 @@ class ReciteApiClient(
         val JSON = "application/json; charset=utf-8".toMediaType()
     }
 }
+
+data class FeedbackReceipt(
+    val feedbackId: String,
+    val notificationSent: Boolean,
+)
 
 class ApiException(
     override val message: String,

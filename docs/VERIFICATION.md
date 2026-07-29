@@ -88,11 +88,12 @@ jq '{siteKey,itemCount,totalStages,manifestVersion,resourceKeyHash}' \
 - 排行 Worker version `c1b94690-39b7-45c9-b84e-66f48c682374` 已部署；公开 GET 200、匿名 POST 401、health 200。
 - 独立 APAC D1 `recite-rankings` 首次认证同步后聚合为 1 行、总段位值 5、今日值 0；重复同步未制造重复行，未读取或输出公开代号以外的身份字段。
 - `recite.bdfz.net/api/health` 与 `/api/learning/health` 部署后仍为 200，78-item learning evidence receipt 保持 active。
-- OnePlus 8 Pro `172.16.193.27:39553`：同签名 v0.1.1 / code 2 覆盖安装成功，Room 进度、加密登录会话与总榜本人快照保留；冷启动 267 ms。
+- OnePlus 8 Pro `172.16.193.27:39553`：从公开 R2 下载的同签名 v0.1.1 / code 2 覆盖安装成功，Room 进度、加密登录会话与总榜本人快照保留；公开包冷启动 428 ms。
 - 实机原生交互验收通过：当前学习阶段、纵向五阶路径、已完成阶段回看、今日／总榜切换。
 - 同一实机临时使用 1600×2560 / 240 dpi 验证 expanded 布局：左侧导航、双栏学习和限宽排行榜均可操作；随后已恢复物理 1080×2376 / 450 dpi。
 - App 反馈的真实 canary 已由 User Center 保存并返回 Telegram `sent=true`；APK 不含 Bot 凭据。
-- 当前预发布 Direct APK 为 2,512,861 bytes，SHA-256 `2997322c1d9f7013cf17a06f38eb30510724cd1e5d59a4b3705fe15a937b11bb`；v1/v2 签名有效，证书 SHA-256 `508429787cb0605f73c9fe423324fd14bc60873802f8d5e167d591bfc352fe0d`。
+- GitHub Actions run `30425879074` 通过；GitHub Release [`v0.1.1`](https://github.com/ieduer/recite-android/releases/tag/v0.1.1) 与 R2 `latest.json` 已公开读回。
+- 当前公开 Direct APK 为 2,512,871 bytes，SHA-256 `54a893373cf1a22215832fe387133d057f1fcd9c281c05835e94b5f9812317b0`；v1/v2 签名有效，证书 SHA-256 `508429787cb0605f73c9fe423324fd14bc60873802f8d5e167d591bfc352fe0d`。
 
 以下仍需商店侧关闭：
 

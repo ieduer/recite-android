@@ -84,7 +84,14 @@ RECITE_ANDROID_KEY_PASSWORD
 App 签名密钥交给 Play App Signing；不能让 Google 另建不兼容的 App 签名。
 通道差异只保留在更新方式与侧载权限。
 
-当前公开版本：[`v0.1.3`](https://github.com/ieduer/recite-android/releases/tag/v0.1.3)。直装 APK 也可从 [第一方 R2 地址](https://img.bdfz.net/apps/recite-android/releases/v0.1.3/94d4ac0c02c5/langlang-0.1.3.apk) 获取；安装前可用 [`latest.json`](https://img.bdfz.net/apps/recite-android/latest.json) 核对版本与 SHA-256。
+当前公开版本：[`v0.1.3`](https://github.com/ieduer/recite-android/releases/tag/v0.1.3)。
+[固定最新版 APK](https://img.bdfz.net/apps/recite-android/latest.apk) 是 Portal
+与人工下载入口；它是 mutable convenience alias，不是审计或回滚权威。
+安装前使用 [`latest.json`](https://img.bdfz.net/apps/recite-android/latest.json)
+核对版本、size 与 SHA-256，其中 `apkUrl`／`downloadUrl` 始终指向
+[当前 immutable APK](https://img.bdfz.net/apps/recite-android/releases/v0.1.3/94d4ac0c02c5/langlang-0.1.3.apk)。
+每次发布必须先让 bare `latest.apk` 与该 immutable artifact 完整逐字节一致，
+再移动 `latest.json`；cache-busted URL 不能替代 Portal 实际 bare URL 验收。
 
 ## 文档
 

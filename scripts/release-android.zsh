@@ -107,6 +107,8 @@ cp "$AAB" "$STAGED_AAB"
 APK_KEY="$R2_PREFIX/releases/v${VERSION}/${SHA12}/langlang-${VERSION}.apk"
 RELEASE_KEY="$R2_PREFIX/releases/v${VERSION}/${SHA12}/release.json"
 DOWNLOAD_URL="https://img.bdfz.net/${APK_KEY}"
+LATEST_APK_KEY="$R2_PREFIX/latest.apk"
+LATEST_APK_URL="https://img.bdfz.net/${LATEST_APK_KEY}"
 
 jq -n \
   --arg schema "bdfz-android-update-v1" \
@@ -174,7 +176,42 @@ gh release create "v${VERSION}" "$STAGED_APK" "$STAGED_AAB" "$RELEASE_DIR/releas
   --title "琅琅 Android ${VERSION}" \
   --notes "Native Android release ${VERSION} (${VERSION_CODE}). APK SHA-256: ${APK_SHA}"
 
-# latest.json is the only mutable object and moves last.
+# Publish the fixed Portal download alias from the exact staged signed APK.
+# The manifest continues to reference the immutable DOWNLOAD_URL.
+wrangler r2 object put "${R2_BUCKET}/${LATEST_APK_KEY}" \
+  --file "$STAGED_APK" \
+  --content-type application/vnd.android.package-archive \
+  --content-disposition 'attachment; filename="langlang-latest.apk"' \
+  --cache-control 'no-cache, max-age=60' \
+  --remote --force
+
+LATEST_READBACK="$(mktemp "${TMPDIR:-/private/tmp}/recite-latest-apk.XXXXXX")"
+cleanup_latest_readback() {
+  rm -f "$LATEST_READBACK"
+}
+trap cleanup_latest_readback EXIT HUP INT TERM
+
+# Verify the unqualified public alias. A cache-busted URL is not sufficient
+# because the canonical Portal links to this exact bare URL.
+curl -fsSL \
+  -H 'Cache-Control: no-cache' \
+  "$LATEST_APK_URL" \
+  -o "$LATEST_READBACK"
+LATEST_PUBLIC_SHA="$(sha256sum "$LATEST_READBACK" | awk '{print $1}')"
+LATEST_PUBLIC_SIZE="$(stat -f '%z' "$LATEST_READBACK")"
+[[ "$LATEST_PUBLIC_SHA" == "$APK_SHA" && "$LATEST_PUBLIC_SIZE" == "$APK_SIZE" ]] || {
+  print -u2 "Public latest.apk mismatch: expected ${APK_SIZE}/${APK_SHA}, got ${LATEST_PUBLIC_SIZE}/${LATEST_PUBLIC_SHA}"
+  exit 1
+}
+cmp -s "$STAGED_APK" "$LATEST_READBACK" || {
+  print -u2 "Public latest.apk is not byte-identical to the staged signed APK"
+  exit 1
+}
+cleanup_latest_readback
+trap - EXIT HUP INT TERM
+
+# latest.json is mutable release metadata and moves last, after the fixed
+# Portal alias has been read back byte-for-byte.
 wrangler r2 object put "${R2_BUCKET}/${R2_PREFIX}/latest.json" \
   --file "$RELEASE_DIR/latest.json" \
   --content-type application/json \
@@ -192,4 +229,5 @@ curl -sS "https://img.bdfz.net/${R2_PREFIX}/latest.json" | jq -e \
 
 print "Released v${VERSION} (${VERSION_CODE})"
 print "APK: $DOWNLOAD_URL"
+print "Fixed latest APK: $LATEST_APK_URL"
 print "SHA-256: $APK_SHA"

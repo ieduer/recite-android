@@ -11,6 +11,8 @@
 - 排行 Worker / D1：`recite-rankings`
 - 运行观测：Pulse `recite.bdfz.net` + script-only `recite-rankings`
 - 更新清单：`https://img.bdfz.net/apps/recite-android/latest.json`
+- Portal 固定最新版 APK：`https://img.bdfz.net/apps/recite-android/latest.apk`
+  （mutable convenience alias；审计与回滚以 manifest 指向的 immutable APK 为准）
 
 ## 2. Health probe
 
@@ -20,6 +22,17 @@ curl -sS https://recite.bdfz.net/api/learning/health | jq .
 curl -sS https://recite.bdfz.net/api/rankings/health | jq .
 curl -sS 'https://recite.bdfz.net/api/rankings?limit=20' | jq .
 curl -sS https://img.bdfz.net/apps/recite-android/latest.json | jq .
+RECITE_RELEASE_URL="$(curl -fsS https://img.bdfz.net/apps/recite-android/latest.json | jq -er .apkUrl)"
+RECITE_APK_TMP="$(mktemp -d)"
+curl -fsSL "$RECITE_RELEASE_URL" -o "$RECITE_APK_TMP/immutable.apk"
+curl -fsSL -H 'Cache-Control: no-cache' \
+  https://img.bdfz.net/apps/recite-android/latest.apk \
+  -o "$RECITE_APK_TMP/latest.apk"
+cmp -s "$RECITE_APK_TMP/immutable.apk" "$RECITE_APK_TMP/latest.apk"
+test "$(stat -f '%z' "$RECITE_APK_TMP/latest.apk")" \
+  = "$(curl -fsS https://img.bdfz.net/apps/recite-android/latest.json | jq -er .size)"
+test "$(sha256sum "$RECITE_APK_TMP/latest.apk" | awk '{print $1}')" \
+  = "$(curl -fsS https://img.bdfz.net/apps/recite-android/latest.json | jq -er .sha256)"
 curl -sS 'https://pulse.bdfz.net/api/meta?verify=<PULSE_VERSION_ID>' \
   | jq '.registry[] | select(.host == "recite.bdfz.net" or .script == "recite-rankings")'
 curl -sS 'https://pulse.bdfz.net/api/range?from=<FROM>&to=<TO>' \
@@ -28,6 +41,10 @@ curl -sS https://pulse.bdfz.net/api/live | jq .
 ```
 
 App 启动后必须在飞行模式下列出 78 篇并打开原文。
+
+上述 alias 检查必须使用 Portal 实际链接的不带 query URL。带 query 的 origin
+probe、HEAD 200 或浏览器显示下载按钮都不能替代完整 body parity。检查后删除
+`$RECITE_APK_TMP`；若 bare alias 因 edge cache 仍旧，发布保持 fail closed。
 
 ## 3. Contract checks
 
@@ -57,6 +74,9 @@ jq '{siteKey,itemCount,totalStages,manifestVersion,resourceKeyHash}' \
 - 更新器未核对 schema、appId、不可变 URL、size、SHA-256、APK package、
   versionCode 与当前安装签章就打开系统安装器
 - 把未签名、未校验或可变 URL 的 APK 发布为 latest
+- 让 `latest.json.apkUrl`／`downloadUrl` 指向 mutable `latest.apk`
+- 在 bare `latest.apk` 与 immutable artifact 的 bytes、size、SHA-256
+  全部一致前移动 `latest.json` 或完成 Portal 发布
 - 未验证升级保留数据就提高 `minimumSupportedVersionCode`
 - 让 App 上报可任意伪造的总段位值
 - 在排行 D1 保存原始用户名、cookie、会话、密码或 Seiue 标识
@@ -81,7 +101,8 @@ jq '{siteKey,itemCount,totalStages,manifestVersion,resourceKeyHash}' \
 
 ## 6. Backup and restore
 
-- 发布前保存上一个 Git tag、GitHub Release、R2 `latest.json` 和对应不可变 APK key。
+- 发布前保存上一个 Git tag、GitHub Release、R2 `latest.json`、`latest.apk`
+  exact bytes/metadata 和对应不可变 APK key。
 - 排行 D1 只做 additive migration；发布前记录 Worker version、migration 清单和聚合行数，不导出公开代号。
 - User Center D1 不做 destructive migration；App 只调用既有 progress upsert。
 - 本机数据库升级必须先写 Room migration 和升级保留测试。
@@ -89,7 +110,11 @@ jq '{siteKey,itemCount,totalStages,manifestVersion,resourceKeyHash}' \
 ## 7. Rollback
 
 - GitHub：重新标记上一稳定 commit，保留失败版本供审计。
-- R2：把 `latest.json` 恢复为上一版本的 immutable `downloadUrl` 和 SHA-256；不可覆盖旧 APK。
+- R2：先从上一版本 immutable APK 恢复 `latest.apk` 并完成 bare URL parity，
+  再恢复匹配的 `latest.json`；不可覆盖旧 APK。
+- Portal：固定链接保持
+  `https://img.bdfz.net/apps/recite-android/latest.apk`。若 alias 尚未恢复，
+  暂时回退到上一条已验证 immutable 下载入口，不得推广不匹配的 alias。
 - 排行：回滚 `recite-rankings` Worker 到上一 version 或移除该窄路径 route；已有快照默认保留，不因代码回滚删除 D1。
 - Play：停止 rollout 或通过 Play Console 回滚；不使用 R2 更新 Play flavor。
 - 设备：安装更高 `versionCode` 的修复版；Android 不允许普通降级覆盖。
@@ -128,6 +153,11 @@ jq '{siteKey,itemCount,totalStages,manifestVersion,resourceKeyHash}' \
 - Pulse version `1e70e9ba-4de6-4845-b458-9e7ac17fd99b` 已将 `recite-rankings` 作为独立 App 后端输出为 `worker_analytics / tracked_zero`；同期 `recite-gk` 为 122 次请求、0 错误，公开站点缺失数为 0。
 - GitHub Actions run `30504601737` 通过；GitHub Release [`v0.1.3`](https://github.com/ieduer/recite-android/releases/tag/v0.1.3) 与 R2 `latest.json` 已公开读回。
 - 当前公开 Direct APK 为 2,529,258 bytes，SHA-256 `94d4ac0c02c52e9a8a9d19a587213dfadf0df56c2cf019af542ef42de9f46e23`；v1/v2 签名有效，证书 SHA-256 `508429787cb0605f73c9fe423324fd14bc60873802f8d5e167d591bfc352fe0d`。
+- 2026-07-30 固定 Portal alias
+  `https://img.bdfz.net/apps/recite-android/latest.apk` 已以 bare URL 完整回读：
+  2,529,258 bytes、SHA-256
+  `94d4ac0c02c52e9a8a9d19a587213dfadf0df56c2cf019af542ef42de9f46e23`，
+  与 v0.1.3 immutable APK／`latest.json` 完全一致。
 
 以下仍需商店侧关闭：
 

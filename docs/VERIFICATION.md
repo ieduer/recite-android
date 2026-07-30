@@ -3,7 +3,7 @@
 ## 1. Source of truth
 
 - 源码：本仓库 `main`
-- 包名：直装 `net.bdfz.recite.direct`；Play `net.bdfz.recite`
+- 唯一包名：直装与 Play 都是 `net.bdfz.recite.direct`
 - 语料：`app/src/main/assets/corpus.json`
 - 学习清单：`app/src/main/assets/learning-manifest.json`
 - 云端进度：User Center `siteKey=recite`
@@ -45,7 +45,7 @@ jq '{siteKey,itemCount,totalStages,manifestVersion,resourceKeyHash}' \
 
 ```bash
 ./gradlew :app:lintDirectDebug :app:testDirectDebugUnitTest \
-  :app:assembleDirectRelease :app:bundlePlayRelease
+  :app:assembleDirectRelease :app:assemblePlayRelease :app:bundlePlayRelease
 ```
 
 禁止：
@@ -53,6 +53,9 @@ jq '{siteKey,itemCount,totalStages,manifestVersion,resourceKeyHash}' \
 - 用 WebView 代替原生学习界面
 - 把密码、cookie、invite code 或签名材料写入仓库
 - Play flavor 申请 `REQUEST_INSTALL_PACKAGES`
+- Direct 与 Play 使用不同 application id 或不同 app-signing identity
+- 更新器未核对 schema、appId、不可变 URL、size、SHA-256、APK package、
+  versionCode 与当前安装签章就打开系统安装器
 - 把未签名、未校验或可变 URL 的 APK 发布为 latest
 - 未验证升级保留数据就提高 `minimumSupportedVersionCode`
 - 让 App 上报可任意伪造的总段位值
@@ -60,8 +63,11 @@ jq '{siteKey,itemCount,totalStages,manifestVersion,resourceKeyHash}' \
 
 ## 5. Dependency regression
 
-- 手机：compact 布局、底部导航、键盘不遮挡提交按钮
-- 平板：至少 800dp 宽，导航栏 + 篇目列表 + 练习双栏
+- 兩台實體手機：OnePlus 9 Pro `LE2120` 與 OnePlus 8 Pro `IN2020` 都跑
+  同一公開 APK 的 v0.1.1 → 高 code 原地更新、冷啟、前後台、Back、
+  離線/恢復、Room/session/outbox 保留、自更新及 scoped fatal/ANR
+- 實體平板：至少 800dp 寬，導航欄 + 篇目列表 + 練習雙欄，並跑覆蓋升級；
+  模擬或改 density 不能替代
 - 离线：五阶段可用，杀进程后本机进度保留
 - 联网：登录后本机 outbox 排空，User Center 读回不倒退
 - 排行：未登录 GET 可读公开榜，未登录 POST 必须 401；登录 POST 只从 User Center 进度计算本人快照
@@ -84,6 +90,7 @@ jq '{siteKey,itemCount,totalStages,manifestVersion,resourceKeyHash}' \
 - 排行：回滚 `recite-rankings` Worker 到上一 version 或移除该窄路径 route；已有快照默认保留，不因代码回滚删除 D1。
 - Play：停止 rollout 或通过 Play Console 回滚；不使用 R2 更新 Play flavor。
 - 设备：安装更高 `versionCode` 的修复版；Android 不允许普通降级覆盖。
+  不卸載 canonical package，不清資料，也不另發第二個 application id。
 
 ## 8. Last verified
 

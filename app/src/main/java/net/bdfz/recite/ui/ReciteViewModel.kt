@@ -297,8 +297,8 @@ class ReciteViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun installUpdate(file: File) {
-        updateManager.install(file)
+    fun installUpdate(info: UpdateInfo, file: File) {
+        updateManager.install(info, file)
     }
 
     fun onForeground() {

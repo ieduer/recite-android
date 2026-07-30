@@ -32,7 +32,7 @@ GitHub source/tag/release
   -> signed direct APK -> R2 blog-images/apps/recite-android/releases/...
   -> latest.json -> immutable APK URL + SHA-256
 Google Play:
-  -> signed AAB, separate play flavor, Play-managed updates
+  -> same-package signed AAB, separate play flavor, Play-managed updates
 ```
 
 ## 能力判断
@@ -98,6 +98,11 @@ Google Play:
 ## Cloudflare 边界
 
 Cloudflare 足以承载当前账号桥接、同步、反馈、榜单、AI 网关和 R2 更新，但不能替代 Google Play 的商店签名、Play Integrity、Billing、预发布报告、商店内更新和 FCM 设备投递。离线学习继续以 Room 为本机权威，不把 D1 变成实时多主数据库。
+
+Direct 與 Play 都使用 `net.bdfz.recite.direct`；Cloudflare 清單只服務
+Direct flavor，Play flavor 不含側載權限。Play App Signing 必須沿用現有
+app-signing identity，否則 Play 無法覆蓋 Direct 安裝，亦不允許以第二個
+package 規避簽章連續性。
 
 Pulse 不直接绑定 User Center D1。`siteKey=recite` 的用户、进度、记录和
 反馈只通过版本化 `USER_CENTER` 服务绑定以站点级聚合进入 Pulse；

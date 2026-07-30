@@ -120,6 +120,7 @@ import net.bdfz.recite.ranking.LeaderboardEntry
 import net.bdfz.recite.ranking.LeaderboardScope
 import net.bdfz.recite.ranking.RankStatus
 import net.bdfz.recite.ranking.ReciteRank
+import net.bdfz.recite.update.UpdateInfo
 import net.bdfz.recite.update.UpdateState
 
 private data class Destination(
@@ -1675,7 +1676,7 @@ private fun AccountScreen(state: ReciteUiState, viewModel: ReciteViewModel) {
                 feedbackOpen = true
             },
         )
-        UpdateCard(state, viewModel) { viewModel.installUpdate(it) }
+        UpdateCard(state, viewModel) { info, file -> viewModel.installUpdate(info, file) }
         Text(
             "版本 ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE}) · ${if (BuildConfig.SELF_UPDATE_ENABLED) "R2 直裝通道" else "Google Play 通道"}",
             modifier = Modifier.fillMaxWidth(),
@@ -1834,7 +1835,7 @@ private fun FeedbackDialog(
 private fun UpdateCard(
     state: ReciteUiState,
     viewModel: ReciteViewModel,
-    onInstall: (java.io.File) -> Unit,
+    onInstall: (UpdateInfo, java.io.File) -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -1889,7 +1890,7 @@ private fun UpdateCard(
                 -> Unit
                 UpdateState.Checking -> LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 is UpdateState.Available -> {
-                    update.info.notes.take(3).forEach {
+                    update.info.releaseNotes.take(3).forEach {
                         Text("• $it", style = MaterialTheme.typography.bodyMedium)
                     }
                 }
@@ -1913,7 +1914,7 @@ private fun UpdateCard(
                 }
                 is UpdateState.Ready -> {
                     Button(
-                        onClick = { onInstall(update.apk) },
+                        onClick = { onInstall(update.info, update.apk) },
                         modifier = Modifier.fillMaxWidth().height(50.dp),
                     ) {
                         Text("安裝更新")

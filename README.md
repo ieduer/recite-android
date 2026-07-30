@@ -77,9 +77,12 @@ RECITE_ANDROID_KEY_PASSWORD
 | 通道 | applicationId | 更新方式 |
 |---|---|---|
 | R2 直装 | `net.bdfz.recite.direct` | `img.bdfz.net` 第一方清单 + 内容寻址 APK |
-| Google Play | `net.bdfz.recite` | Play 商店；无 `REQUEST_INSTALL_PACKAGES` |
+| Google Play | `net.bdfz.recite.direct` | Play 商店；无 `REQUEST_INSTALL_PACKAGES` |
 
-直装版与 Play 版故意使用不同 package，避免 Google Play 签名与站外签名互相破坏升级连续性。
+两个通道使用同一 package 与 app-signing identity，因此 Android 只保留一个
+琅琅 App，Direct 与 Play 都只能覆盖更新。Play Console 建档时必须把现有
+App 签名密钥交给 Play App Signing；不能让 Google 另建不兼容的 App 签名。
+通道差异只保留在更新方式与侧载权限。
 
 当前公开版本：[`v0.1.1`](https://github.com/ieduer/recite-android/releases/tag/v0.1.1)。直装 APK 也可从 [第一方 R2 地址](https://img.bdfz.net/apps/recite-android/releases/v0.1.1/54a893373cf1/langlang-0.1.1.apk) 获取；安装前可用 [`latest.json`](https://img.bdfz.net/apps/recite-android/latest.json) 核对版本与 SHA-256。
 

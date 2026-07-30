@@ -11,6 +11,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -183,12 +184,33 @@ class ReciteApiClient(
         return executeJson(Request.Builder().url(url).get().build()).payload
     }
 
-    fun download(url: String): ByteArray {
+    fun download(url: String, expectedSize: Long, maximumSize: Long): ByteArray {
+        require(expectedSize in 1..maximumSize) { "更新檔案大小無效。" }
         client.newCall(Request.Builder().url(url).get().build()).execute().use { response ->
             if (!response.isSuccessful) {
                 throw ApiException("下載失敗（HTTP ${response.code}）。", response.code)
             }
-            return response.body.bytes()
+            val body = response.body
+            val declaredSize = body.contentLength()
+            require(declaredSize == -1L || declaredSize == expectedSize) {
+                "更新檔案大小與清單不一致。"
+            }
+            val output = ByteArrayOutputStream(expectedSize.coerceAtMost(Int.MAX_VALUE.toLong()).toInt())
+            val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+            var total = 0L
+            body.byteStream().use { input ->
+                while (true) {
+                    val read = input.read(buffer)
+                    if (read == -1) break
+                    total += read
+                    require(total <= expectedSize && total <= maximumSize) {
+                        "更新檔案超出清單大小，已停止下載。"
+                    }
+                    output.write(buffer, 0, read)
+                }
+            }
+            require(total == expectedSize) { "更新檔案不完整，已停止下載。" }
+            return output.toByteArray()
         }
     }
 

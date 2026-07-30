@@ -24,11 +24,11 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "net.bdfz.recite"
+        applicationId = "net.bdfz.recite.direct"
         minSdk = 23
         targetSdk = 37
-        versionCode = 2
-        versionName = "0.1.1"
+        versionCode = 3
+        versionName = "0.1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -42,7 +42,6 @@ android {
     productFlavors {
         create("direct") {
             dimension = "distribution"
-            applicationIdSuffix = ".direct"
             buildConfigField("boolean", "SELF_UPDATE_ENABLED", "true")
         }
         create("play") {

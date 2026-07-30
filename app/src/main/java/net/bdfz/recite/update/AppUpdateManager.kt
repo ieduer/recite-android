@@ -93,40 +93,43 @@ class AppUpdateManager(
         }.getOrElse { UpdateState.Error(it.message ?: "更新下載失敗。") }
     }
 
-    fun install(info: UpdateInfo, apk: File) {
-        if (!BuildConfig.SELF_UPDATE_ENABLED) return
-        val updatesDirectory = File(context.cacheDir, "updates").canonicalFile
-        require(apk.canonicalFile.parentFile == updatesDirectory) {
-            "安裝檔案不在受控更新目錄。"
-        }
-        verifyDownloadedApk(info, apk)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-            !context.packageManager.canRequestPackageInstalls()
-        ) {
-            context.startActivity(
-                Intent(
-                    Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
-                    Uri.parse("package:${context.packageName}"),
-                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+    fun install(info: UpdateInfo, apk: File): UpdateState {
+        if (!BuildConfig.SELF_UPDATE_ENABLED) return UpdateState.Current
+        return runCatching {
+            val updatesDirectory = File(context.cacheDir, "updates").canonicalFile
+            require(apk.canonicalFile.parentFile == updatesDirectory) {
+                "安裝檔案不在受控更新目錄。"
+            }
+            verifyDownloadedApk(info, apk)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                !context.packageManager.canRequestPackageInstalls()
+            ) {
+                context.startActivity(
+                    Intent(
+                        Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                        Uri.parse("package:${context.packageName}"),
+                    ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                )
+                return@runCatching UpdateState.Ready(info, apk)
+            }
+            val uri = FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.files",
+                apk,
             )
-            return
-        }
-        val uri = FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.files",
-            apk,
-        )
-        context.startActivity(
-            Intent(Intent.ACTION_VIEW)
-                .setDataAndType(uri, APK_MIME)
-                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-        )
+            context.startActivity(
+                Intent(Intent.ACTION_VIEW)
+                    .setDataAndType(uri, APK_MIME)
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            )
+            UpdateState.Ready(info, apk)
+        }.getOrElse { UpdateState.Error(it.message ?: "更新安裝驗證失敗。") }
     }
 
     private fun verifyDownloadedApk(info: UpdateInfo, apk: File) {
         require(apk.isFile && apk.length() == info.size) { "更新檔案大小校驗失敗。" }
-        require(sha256(apk.readBytes()) == info.sha256) { "更新檔案雜湊校驗失敗。" }
+        require(sha256(apk) == info.sha256) { "更新檔案雜湊校驗失敗。" }
 
         val archive = packageInfo(apk)
             ?: error("無法讀取更新 APK 的套件資訊。")
@@ -150,6 +153,19 @@ class AppUpdateManager(
         return MessageDigest.getInstance("SHA-256")
             .digest(bytes)
             .joinToString("") { "%02x".format(it) }
+    }
+
+    private fun sha256(file: File): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        file.inputStream().buffered().use { input ->
+            val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+            while (true) {
+                val read = input.read(buffer)
+                if (read == -1) break
+                digest.update(buffer, 0, read)
+            }
+        }
+        return digest.digest().joinToString("") { "%02x".format(it) }
     }
 
     @Suppress("DEPRECATION")

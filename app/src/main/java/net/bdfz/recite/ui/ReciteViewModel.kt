@@ -298,7 +298,7 @@ class ReciteViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun installUpdate(info: UpdateInfo, file: File) {
-        updateManager.install(info, file)
+        _uiState.value = _uiState.value.copy(updateState = updateManager.install(info, file))
     }
 
     fun onForeground() {

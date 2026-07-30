@@ -2,6 +2,7 @@
 
 package net.bdfz.recite.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -145,6 +146,10 @@ fun ReciteApp(
     val state by viewModel.uiState.collectAsState()
     val compact = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
     val detailPiece = state.selectedPieceId?.let { id -> state.pieces.find { it.id == id } }
+
+    BackHandler(enabled = compact && detailPiece != null) {
+        viewModel.selectPiece(null)
+    }
 
     Box(
         modifier = Modifier

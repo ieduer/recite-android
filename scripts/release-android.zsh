@@ -130,17 +130,17 @@ jq -n \
     size: $size,
     publishedAt: $publishedAt,
     releaseNotes: [
-      "Direct 與 Play 統一為同一個 App，不再產生重複安裝",
-      "更新前核對套件名、版本、大小、SHA-256 與目前 App 簽章",
-      "更新清單升級為 bdfz-android-update-v1"
+      "修正手機學習頁的 Android 系統返回鍵，現在會先回到篇目列表",
+      "Direct 與 Play 維持同一套件與簽章，不會產生重複 App",
+      "繼續在安裝前核對套件名、版本、大小、SHA-256 與目前 App 簽章"
     ],
     mandatory: $mandatory,
     minimumSupportedVersionCode: 1,
     downloadUrl: $apkUrl,
     notes: [
-      "Direct 與 Play 統一為同一個 App，不再產生重複安裝",
-      "更新前核對套件名、版本、大小、SHA-256 與目前 App 簽章",
-      "更新清單升級為 bdfz-android-update-v1"
+      "修正手機學習頁的 Android 系統返回鍵，現在會先回到篇目列表",
+      "Direct 與 Play 維持同一套件與簽章，不會產生重複 App",
+      "繼續在安裝前核對套件名、版本、大小、SHA-256 與目前 App 簽章"
     ]
   }' > "$RELEASE_DIR/latest.json"
 cp "$RELEASE_DIR/latest.json" "$RELEASE_DIR/release.json"

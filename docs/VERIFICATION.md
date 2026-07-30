@@ -64,7 +64,7 @@ jq '{siteKey,itemCount,totalStages,manifestVersion,resourceKeyHash}' \
 ## 5. Dependency regression
 
 - 兩台實體手機：OnePlus 9 Pro `LE2120` 與 OnePlus 8 Pro `IN2020` 都跑
-  同一公開 APK 的 v0.1.1 → 高 code 原地更新、冷啟、前後台、Back、
+  同一公開 APK 的低 code → 高 code 原地更新、冷啟、前後台、Back、
   離線/恢復、Room/session/outbox 保留、自更新及 scoped fatal/ANR
 - 實體平板：至少 800dp 寬，導航欄 + 篇目列表 + 練習雙欄，並跑覆蓋升級；
   模擬或改 density 不能替代
@@ -97,7 +97,22 @@ jq '{siteKey,itemCount,totalStages,manifestVersion,resourceKeyHash}' \
 2026-07-29：
 
 - AGP 9.2.1 / Gradle 9.6.1 / JDK 17 / API 37 的 Direct release lint、R8 APK 与 Play AAB 构建成功。
-- 12 项 Android 单元测试通过：离线评分 5、登录／反馈／排行榜网络契约 4、段位边界 3。
+- 17 项 Android 单元测试通过：更新清单 5、离线评分 5、登录／反馈／排行榜网络契约 4、段位边界 3。
+- OnePlus 9 Pro `LE2120 / c5467d2b / API 34` 与 OnePlus 8 Pro
+  `IN2020 / 6393cccf / API 30` 均从公开 v0.1.1/code 2 经 App 内更新至
+  v0.1.2/code 3，再经 App 内更新至 v0.1.3/code 4；两次均走下载、校验、
+  系统安装器与安装后自检，没有卸载或清除数据。
+- 两台 v0.1.3 冷启动分别为 336 ms 与 261 ms；学习进度保持为
+  `1% / 0 完成 / 2 进行中` 与 `1% / 0 完成 / 3 进行中`。OnePlus 8 Pro
+  的加密登录会话与空 outbox 保留；两台安装后手动检查都显示当前为最新版本。
+- 两台首次安装时间与 user-0 `ceDataInode` 在两次覆盖升级后均未改变；
+  设备上只有 `net.bdfz.recite.direct`，不存在第二个琅琅包名。两台拉回的
+  installed base APK 均为 2,529,258 bytes，SHA-256
+  `94d4ac0c02c52e9a8a9d19a587213dfadf0df56c2cf019af542ef42de9f46e23`，
+  与公开 R2 对象一致。
+- v0.1.3 修正手机学习详情页的 Android 系统返回键；两台均验证一次返回后
+  留在 `MainActivity` 并回到篇目列表。覆盖更新、冷启动、返回与更新自检期间，
+  scoped logcat 未见 App fatal/ANR。
 - `recite-rankings` 使用 Wrangler 4.115.0、TypeScript 7.0.2、Vitest 4.1.10；类型检查、4 项 Worker 测试和 dry deploy 通过。
 - 排行 Worker version `c1b94690-39b7-45c9-b84e-66f48c682374` 已部署；公开 GET 200、匿名 POST 401、health 200。
 - 独立 APAC D1 `recite-rankings` 首次认证同步后聚合为 1 行、总段位值 5、今日值 0；重复同步未制造重复行，未读取或输出公开代号以外的身份字段。
@@ -108,8 +123,8 @@ jq '{siteKey,itemCount,totalStages,manifestVersion,resourceKeyHash}' \
 - App 反馈的真实 canary 已由 User Center 保存并返回 Telegram `sent=true`；APK 不含 Bot 凭据。
 - User Center 聚合读回确认 `source=recite-android` 为 1 名用户、3 笔进度；Pulse 通过 `USER_CENTER` 服务绑定显示 `siteKey=recite` 共 7 名用户、26 笔聚合资料列。
 - Pulse version `1e70e9ba-4de6-4845-b458-9e7ac17fd99b` 已将 `recite-rankings` 作为独立 App 后端输出为 `worker_analytics / tracked_zero`；同期 `recite-gk` 为 122 次请求、0 错误，公开站点缺失数为 0。
-- GitHub Actions run `30425879074` 通过；GitHub Release [`v0.1.1`](https://github.com/ieduer/recite-android/releases/tag/v0.1.1) 与 R2 `latest.json` 已公开读回。
-- 当前公开 Direct APK 为 2,512,871 bytes，SHA-256 `54a893373cf1a22215832fe387133d057f1fcd9c281c05835e94b5f9812317b0`；v1/v2 签名有效，证书 SHA-256 `508429787cb0605f73c9fe423324fd14bc60873802f8d5e167d591bfc352fe0d`。
+- GitHub Actions run `30504601737` 通过；GitHub Release [`v0.1.3`](https://github.com/ieduer/recite-android/releases/tag/v0.1.3) 与 R2 `latest.json` 已公开读回。
+- 当前公开 Direct APK 为 2,529,258 bytes，SHA-256 `94d4ac0c02c52e9a8a9d19a587213dfadf0df56c2cf019af542ef42de9f46e23`；v1/v2 签名有效，证书 SHA-256 `508429787cb0605f73c9fe423324fd14bc60873802f8d5e167d591bfc352fe0d`。
 
 以下仍需商店侧关闭：
 

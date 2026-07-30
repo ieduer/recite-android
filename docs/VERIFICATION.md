@@ -63,11 +63,14 @@ jq '{siteKey,itemCount,totalStages,manifestVersion,resourceKeyHash}' \
 
 ## 5. Dependency regression
 
-- 兩台實體手機：OnePlus 9 Pro `LE2120` 與 OnePlus 8 Pro `IN2020` 都跑
-  同一公開 APK 的低 code → 高 code 原地更新、冷啟、前後台、Back、
-  離線/恢復、Room/session/outbox 保留、自更新及 scoped fatal/ANR
-- 實體平板：至少 800dp 寬，導航欄 + 篇目列表 + 練習雙欄，並跑覆蓋升級；
-  模擬或改 density 不能替代
+- 選定一台登記實體手機：OnePlus 9 Pro `LE2120` 或 OnePlus 8 Pro
+  `IN2020`，以 hardware serial 固定目標，跑同一公開 APK 的低 code → 高 code
+  原地更新、冷啟、前後台、Back、離線/恢復、Room/session/outbox 保留、
+  自更新及 scoped fatal/ANR；第二台手機與 emulator 只作補充
+- 同一手機先記錄 size/density/rotation/font/global + per-network
+  proxy/keep-awake，再以可逆方式取得 App-observed maxWidth ≥840dp，驗證
+  200% 字級、橫竖屏、多窗口與導航欄 + 篇目列表 + 練習雙欄，最後逐項恢復
+  並讀回原始基線
 - 离线：五阶段可用，杀进程后本机进度保留
 - 联网：登录后本机 outbox 排空，User Center 读回不倒退
 - 排行：未登录 GET 可读公开榜，未登录 POST 必须 401；登录 POST 只从 User Center 进度计算本人快照
@@ -129,4 +132,5 @@ jq '{siteKey,itemCount,totalStages,manifestVersion,resourceKeyHash}' \
 以下仍需商店侧关闭：
 
 - Google Play Console 建档、Data Safety、内容分级、商店素材与预发布报告
-- 一台真实 Android 平板的最终人工验收；当前已有 expanded 实机显示覆盖和既有平板模拟验证
+- 选定登记手机上的最终可逆 expanded-layout 人工验收；当前历史 expanded
+  实机与平板模拟证据仍只作补充，须按现行设置保存／恢复标准重跑
